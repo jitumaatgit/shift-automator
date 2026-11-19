@@ -1,0 +1,6 @@
+python-dateutil>=2.9.0
+pyyaml>=6.0.1                    # Termux: pkg install python-pyyaml
+google-api-python-client>=2.120.0
+tzdata>=2024.1
+pytest>=8.0.0                    # Termux: pkg install python-pytest
+requests>=2.31.0                 # Termux: pkg install python-requests

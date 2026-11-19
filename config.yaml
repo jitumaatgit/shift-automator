@@ -1,0 +1,152 @@
+# Shift Automator Configuration
+# Adjust thresholds, preferences, and rules without touching code.
+
+# --- Runtime mode ---
+dry_run: false # When true: no real SMS/calendar changes are made. Good for testing.
+
+# --- Decision threshold ---
+# Binary decision: score > auto_decline_threshold => AUTO_ACCEPT, else AUTO_DECLINE
+auto_decline_threshold: -5.0
+
+# --- Active rules (in evaluation order) ---
+active_rules:
+  - wakefulness_gate
+  - calendar_conflict
+  - day_hours_cap
+  - post_cap_break
+  - rest_gap_sleep
+  - location_preference
+  - shift_type_preference
+  - title_preference
+  - time_of_day
+  - overnight_shift
+
+# --- Location preferences ---
+location_preferences:
+  liked:
+    - "8x8"
+    - "STS"
+    - "Estate"
+    - "Starlight"
+  disliked: []
+
+location_liked_bonus: 3.0
+location_disliked_penalty: 3.0
+
+# --- Building / shift type scoring ---
+# Each recognized building gets a base score. Higher = more likely to auto-accept.
+# Adjust these per-building as you learn which ones you prefer.
+shift_type_preferences:
+  Special Projects: 0.5
+  Building Lunch Coverage: -100.0 # hard decline - never accept lunch coverage
+  Building Lockout: 0.5
+  Estate: 2.0
+  Starlight: 3.0
+  STS: 2.0
+  Hazel Heights: 0.0 # -5.0 to auto-decline
+  8x8: 2.5
+  Old Town Clinic AM: 1.0
+  Old Town Clinic PM: 1.0
+  Old Town Recovery Center AM: 1.0
+  Old Town Recovery Center PM: 1.0
+  Hooper: 1.5
+  HRR: 2.0
+  Blackburn Clinic: 1.5
+  CB Rutherford: 0.5
+  Larry Naito: 3.0
+  Evergreen: 0.5
+  Karibu: 2.0
+  Admin: 2.0
+  IT: 3.0
+  Imani: 2.0
+  Employment Access Center: 1.0
+  16th & Burnside: 1.0
+  Hill Park: 0.5
+  Shoreline: 1.0
+  Ankeny/Sally: 1.0
+  Biltmore/Butte: -10.0
+  Medford: 0.5
+  Madrona: 1.0
+  Henry: 1.0
+  Alder: 1.0
+  Ceder Commons: 1.0
+  Meridian Gardens: 0.0
+  River Haven: 2.0
+  TCC/Chez Ami: 0.0
+  ROC: 1.0
+
+# --- Title/role preferences ---
+# Score based on the shift role title (e.g. FD = Front Desk, J1 = Janitorial).
+# Key must match the exact title text in the shift header (e.g. title after bracket).
+title_preferences:
+  FD: 3.0
+  J1: 1.0
+  CBA: 1.5
+
+# Optional partial-match keywords if the title text varies slightly
+title_keywords:
+  "FD": 3.0
+  "Front Desk": 3.0
+  "J1": 1.0
+  "Janitorial": 1.0
+  "CBA": 2.0
+  "Community Building": 2.0
+
+# --- Time-of-day preferences ---
+preferred_hours:
+  - [6, 18]
+preferred_time_bonus: 1.5
+
+undesired_hours:
+  - [0, 5]
+undesired_time_penalty: 1.0
+veto_undesired_hours: true
+
+# --- Weekly hours / overtime ---
+# Note: accept_overtime and overtime_bonus were removed — the rules engine
+# uses offer.is_overtime_eligible (parsed from shift_note) instead.
+weekly_hours_cap: 40.0
+
+# --- Rest gap between shifts ---
+rest_gap_sleep_start: 22
+rest_gap_sleep_end: 6
+rest_gap_sleep_hours: 7.0
+rest_gap_penalty: -10.0
+
+# --- Daily hours cap ---
+day_hours_cap: 16.0
+post_cap_break_hours: 8.0
+
+# --- Wakefulness gate ---
+wakefulness_gate_start: 0
+wakefulness_gate_end: 6
+wakefulness_gate_current: 5
+
+# --- Overnight shift veto ---
+# Veto shifts whose end time lands in this window (catches 8pm-4am, 10pm-6am, etc.)
+overnight_veto_start_hour: 0
+overnight_veto_end_hour: 6
+
+# --- Phone numbers ---
+staffing_number: "337889"
+personal_number: "+15035550100"
+
+# --- SMS transport ---
+sms_transport: "termux"
+
+# --- Android / Termux settings ---
+work_sim_sub_id: "0"
+
+# --- Push notifications (ntfy.sh) ---
+ntfy_channel: "YOUR_SECRET_NTFY_TOPIC"
+tasker_base_url: "http://localhost:8080"
+cancel_warning_seconds: 300
+
+# --- Logging ---
+log_file: "shift_automator_log.json"
+
+# --- Google Calendar ---
+calendar_id: "your-email@example.com"
+calendar_credentials_path: "credentials.json"
+calendar_timezone: "America/Los_Angeles"
+calendar_cache_ttl_seconds: 3600 # Cache calendar events for this long (reduces API latency)

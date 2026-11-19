@@ -1,0 +1,7 @@
+#!/data/data/com.termux/files/usr/bin/bash
+cd /data/data/com.termux/files/home/shift-automator
+INPUT=$(cat)
+echo "$(date -Iseconds) len=${#INPUT}" >> ~/.termux/tasker/shift-bot-runs.log
+exec 9> ~/.termux/tasker/shift-bot.lock
+flock -w 120 9 || { echo "$(date -Iseconds) LOCK_TIMEOUT" >> ~/.termux/tasker/shift-bot-runs.log; exit 1; }
+python src/main.py --json --text "$INPUT"

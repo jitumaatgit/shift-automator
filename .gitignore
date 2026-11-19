@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# OpenCode
+.opencode/
+.opencode-sessions/
+*.log
+
+# Credentials
+credentials.json
+.env
+
+# Runtime artifacts
+calendar_cache.json
+shift_automator_log*
+
+# SMS dumps with PII (third-party names + personal phones)
+# only the redacted merged offers file is committed; raw and per-phone
+# dumps stay local — never commit full-PII dumps
+data/dumps/*.txt
+data/dumps/old_phone.json
+data/dumps/working_phone.json
+data/dumps/offers_merged.json

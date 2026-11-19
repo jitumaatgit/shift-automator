@@ -1,0 +1,44 @@
+name: Scheduled OpenCode Task
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+
+jobs:
+  opencode:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Run opencode (GLM 5.2)
+        id: primary
+        uses: anomalyco/opencode/github@latest
+        continue-on-error: true
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        with:
+          model: nvidia/z-ai/glm-5.2
+          share: false
+          prompt: |
+            Review the codebase for any TODO comments and create a summary.
+            If you find issues worth addressing, open an issue to track them.
+
+      - name: Run opencode fallback (DeepSeek V4 Pro)
+        if: steps.primary.outcome == 'failure'
+        uses: anomalyco/opencode/github@latest
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        with:
+          model: nvidia/deepseek-ai/deepseek-v4-pro
+          share: false
+          prompt: |
+            Review the codebase for any TODO comments and create a summary.
+            If you find issues worth addressing, open an issue to track them.
